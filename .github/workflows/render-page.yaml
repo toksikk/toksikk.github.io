@@ -32,11 +32,18 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: website
+      - name: Check changes
+        run: git diff
       - name: Commit artifact
         run: |
           git config --global user.name 'ci/cd'
           git config --global user.email 'toksikk@users.noreply.github.com'
           mv README.html index.html
-          git add index.html
-          git commit -m "Update website"
-          git push
+          if [ -z "$(git status --porcelain index.html)" ]; then
+            echo "No changes in the repository."
+          else
+            git add index.html
+            git commit -m "Update website"
+            git push
+          fi
+
