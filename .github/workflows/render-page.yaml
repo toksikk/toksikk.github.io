@@ -1,5 +1,5 @@
 name: Render page
-on: workflow_dispatch
+on: [workflow_dispatch, push]
 jobs:
   render:
     name: Render website
