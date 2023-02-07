@@ -1,5 +1,9 @@
 name: Render page
-on: [workflow_dispatch, push]
+on: 
+  workflow_dispatch:
+  push:
+  repository_dispatch:
+    types: [deploy]
 jobs:
   render:
     name: Render website
