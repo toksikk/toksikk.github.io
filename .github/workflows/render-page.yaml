@@ -1,0 +1,42 @@
+name: Render page
+on: workflow_dispatch
+jobs:
+  render:
+    name: Render website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout profile
+        uses: actions/checkout@v3
+        with:
+          repository: "toksikk/toksikk"
+      - name: Markdown to HTML
+        uses: BaileyJM02/markdown-to-pdf@v1.2.0
+        with:
+          input_path: README.md
+          build_html: true
+          build_pdf: false
+          output_dir: html
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: website
+          path: html
+  update-repo:
+    name: Update repo with new index.html
+    runs-on: ubuntu-latest
+    needs: render
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: website
+      - name: Commit artifact
+        run: |
+          git config --global user.name 'ci/cd'
+          git config --global user.email 'toksikk@users.noreply.github.com'
+          mv README.html index.html
+          git add index.html
+          git commit -m "Update website"
+          git push
